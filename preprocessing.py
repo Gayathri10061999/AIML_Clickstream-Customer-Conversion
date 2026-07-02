@@ -1,23 +1,33 @@
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.impute import SimpleImputer
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
 
-def get_preprocessor(num_features, cat_features):
-    num_pipeline = Pipeline([
-        ("imputer", SimpleImputer(strategy="median")),
-        ("scaler", StandardScaler())
-    ])
+def load_data(path):
+    return pd.read_excel(path)
 
-    cat_pipeline = Pipeline([
-        ("imputer", SimpleImputer(strategy="most_frequent")),
-        ("encoder", OneHotEncoder(handle_unknown="ignore"))
-    ])
 
-    preprocessor = ColumnTransformer([
-        ("num", num_pipeline, num_features),
-        ("cat", cat_pipeline, cat_features)
-    ])
+def encode_features(df):
 
-    return preprocessor
+    categorical_cols = [
+        'country',
+        'page1_main_category',
+        'page2_clothing_model',
+        'colour',
+        'location',
+        'model_photography',
+        'price_2'
+    ]
+
+    encoders = {}
+
+    for col in categorical_cols:
+
+        le = LabelEncoder()
+
+        df[col] = le.fit_transform(
+            df[col].astype(str)
+        )
+
+        encoders[col] = le
+
+    return df, encoders
