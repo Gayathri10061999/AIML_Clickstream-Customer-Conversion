@@ -1,35 +1,83 @@
 import streamlit as st
-import pandas as pd
+import numpy as np
 import joblib
-from src.feature_engineering import create_features
 
-st.title("E-Commerce Customer Intelligence")
+clf = joblib.load(
+    "C:/Users/gayat/AppData/Local/Programs/Python/Python313/models/classifier.pkl"
+)
 
-clf = joblib.load("models/classifier.pkl")
-reg = joblib.load("models/regressor.pkl")
-cluster_model = joblib.load("models/clustering.pkl")
-scaler = joblib.load("models/scaler.pkl")
+reg = joblib.load(
+    "C:/Users/gayat/AppData/Local/Programs/Python/Python313/models/regressor.pkl"
+)
 
-uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
+cluster = joblib.load(
+    "C:/Users/gayat/AppData/Local/Programs/Python/Python313/models/cluster.pkl"
+)
 
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
-    df = create_features(df)
+scaler = joblib.load(
+    "C:/Users/gayat/AppData/Local/Programs/Python/Python313/models/scaler.pkl"
+)
 
-    st.write("Input Data", df.head())
+st.title(
+    "Customer Conversion Analysis"
+)
 
-    # Predictions
-    conversion = clf.predict(df)
-    revenue = reg.predict(df)
+total_pages = st.number_input(
+    "Total Pages"
+)
 
-    # Clustering
-    X_cluster = df.select_dtypes(include=["int64", "float64"])
-    X_scaled = scaler.transform(X_cluster)
-    clusters = cluster_model.predict(X_scaled)
+avg_price = st.number_input(
+    "Average Price"
+)
 
-    df["Conversion"] = conversion
-    df["Revenue"] = revenue
-    df["Segment"] = clusters
+max_order = st.number_input(
+    "Max Order"
+)
 
-    st.write("Results", df.head())
-    st.bar_chart(df["Segment"].value_counts())
+unique_locations = st.number_input(
+    "Unique Locations"
+)
+
+country = st.number_input(
+    "Country"
+)
+
+price_category = st.number_input(
+    "Price Category"
+)
+
+if st.button("Predict"):
+
+    data = np.array([[
+        total_pages,
+        avg_price,
+        max_order,
+        unique_locations,
+        country,
+        price_category
+    ]])
+
+    data = scaler.transform(data)
+
+    conversion = clf.predict(data)[0]
+
+    revenue = reg.predict(data)[0]
+
+    segment = cluster.predict(data)[0]
+
+    st.subheader("Results")
+
+    st.write(
+        "Conversion:",
+        conversion
+    )
+
+    st.write(
+        "Revenue:",
+        round(revenue, 2)
+    )
+
+    st.write(
+        "Cluster:",
+        segment
+    )
