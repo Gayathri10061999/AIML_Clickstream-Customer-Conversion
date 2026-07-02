@@ -1,17 +1,41 @@
 import pandas as pd
 
 
-def create_features(df):
-    df = df.copy()
+def create_session_features(df):
 
-    if "exit_time" in df.columns and "entry_time" in df.columns:
-        df["session_duration"] = df["exit_time"] - df["entry_time"]
+    session_df = df.groupby(
+        'session_id'
+    ).agg({
 
-    if "page_views" in df.columns:
-        df["pages_per_minute"] = df["page_views"] / (df.get("session_duration", 1) + 1)
-        df["bounce_flag"] = (df["page_views"] == 1).astype(int)
+        'page':'count',
+        'price':'mean',
+        'order':'max',
+        'location':'nunique',
+        'country':'first',
+        'price_2':'first'
 
-    if "day_of_week" in df.columns:
-        df["is_weekend"] = df["day_of_week"].isin(["Sat", "Sun"]).astype(int)
+    }).reset_index()
 
-    return df
+    session_df.columns = [
+
+        'session_id',
+        'total_pages',
+        'avg_price',
+        'max_order',
+        'unique_locations',
+        'country',
+        'price_category'
+
+    ]
+
+    session_df['conversion'] = (
+        session_df['total_pages'] > 5
+    ).astype(int)
+
+    session_df['revenue'] = (
+        session_df['avg_price']
+        *
+        session_df['total_pages']
+    )
+
+    return session_df
