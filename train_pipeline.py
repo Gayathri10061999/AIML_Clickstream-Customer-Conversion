@@ -14,7 +14,7 @@ from src.clustering import *
 # Load Dataset
 
 df = load_data(
-    "data/train_data.xlsx"
+    "C:/Users/gayat/AppData/Local/Programs/Python/Python313/data/train.xlsx"
 )
 
 # Encoding
@@ -47,7 +47,7 @@ X_scaled = scaler.fit_transform(X)
 
 joblib.dump(
     scaler,
-    "models/scaler.pkl"
+    "C:/Users/gayat/AppData/Local/Programs/Python/Python313/models/scaler.pkl"
 )
 
 # Classification
@@ -72,7 +72,7 @@ evaluate_classifier(
 
 joblib.dump(
     clf,
-    "models/classifier.pkl"
+    "C:/Users/gayat/AppData/Local/Programs/Python/Python313/models/classifier.pkl"
 )
 
 # Regression
@@ -97,7 +97,7 @@ evaluate_regressor(
 
 joblib.dump(
     reg,
-    "models/regressor.pkl"
+    "C:/Users/gayat/AppData/Local/Programs/Python/Python313/models/regressor.pkl"
 )
 
 # Clustering
@@ -113,7 +113,7 @@ evaluate_cluster(
 
 joblib.dump(
     cluster_model,
-    "models/cluster.pkl"
+    "C:/Users/gayat/AppData/Local/Programs/Python/Python313/models/cluster.pkl"
 )
 
 print("Training Completed")
